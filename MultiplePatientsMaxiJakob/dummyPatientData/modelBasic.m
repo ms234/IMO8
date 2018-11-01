@@ -17,12 +17,13 @@ Rmtki = double(ton(2)>0);
 Rnivo = double(ton(3)>0);
 
 beta   = exp(-lambda1*(t-ton(1)));
-phi = 0.9*exp(-lambda2*(t-ton(2)));
+phi = exp(-((t-ton(2))/lambda2^2)^2);%(1-(1e-10))*exp(-lambda2*(t-ton(2)));
 psi    = 0.5 *exp(-lambda3*(t-ton(3)));
 
 % disp(['With drug ', num2str(t), ', ' , num2str((1 - (T/(K*(1-phi*Rmtki)))))])
 % disp(['Without drug ',num2str((1 - (T/(K))))])
-dT = (alpha - beta*Rmtor)*T*(1 - (T/(K*(1-phi*Rmtki)))) - eta*E*T*(1 - (S/(S+E)));
+% dT = (alpha - beta*Rmtor)*T*(1 - (T/(K*(1-phi*Rmtki)))) - eta*E*T*(1 - (S/(S+E)));
+dT = (alpha - beta*Rmtor)*T*(1 - (T/K)^(1-phi*Rmtki)) - eta*E*T*(1 - (S/(S+E)));
 dE = 0* sigma + ((rho + psi*Rnivo)*E*T/(gamma + T)) - mu*E*T - delta*E;
 dS = rho*S*T/(gamma + T) - epsilon*S;
 

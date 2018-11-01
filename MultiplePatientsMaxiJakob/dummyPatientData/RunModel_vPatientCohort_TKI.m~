@@ -3,7 +3,7 @@ clear all, close all, format compact, clc
 
 global ODE_TOL
 
-for tonset = (30)%(7 * [1,4,16])
+for tonset = (7 * [1,4,16])
 % tonset = 30;
 % close all 
 pars = load_global;
@@ -13,13 +13,13 @@ tmax2 = 1.5*365;
 % T0 = 1.5E8;   % was 5E7
 % E0 = 2E7; % it was 3.2E5
 % S0 = 3* E0; % was 3*E0
-T0 = 1.5E9;   % was 5E7
+T0 = 1.5E8;   % was 5E7
 E0 = 2E6; % it was 3.2E5
 S0 = 3* E0; % was 3*E0
 
 
 rng(1);
-Npatients = 25; % define the number of patients
+Npatients = 1; % define the number of patients
 wiggle = 0.25; % how much do you want to disturb the initial conditions
 InitG = repmat([T0 E0 S0],Npatients,1);
 % InitW =  InitG;
@@ -73,16 +73,16 @@ for pat = 1:Npatients
     currentSol_Ctrl = SOL_Ctrl(pat);
 subplot(2,3,1)
 hold on; % PLOT TUMOR
- p = plot(currentSol.x, (currentSol.y(1,:)),'linewidth',PlotWidth,'Color',[colz(pat,:),PlotAlpha]);
-%  p = plot(currentSol_Ctrl.x, log10(currentSol_Ctrl.y(1,:)),'linewidth',PlotWidth,'Color',[colz(pat,:),PlotAlpha],'Linestyle','--');
+ p = plot(currentSol.x, log10(currentSol.y(1,:)),'linewidth',PlotWidth,'Color',[colz(pat,:),PlotAlpha]);
+ p = plot(currentSol_Ctrl.x, log10(currentSol_Ctrl.y(1,:)),'linewidth',PlotWidth,'Color',[colz(pat,:),PlotAlpha],'Linestyle','--');
 hold off;
 subplot(2,3,2)
 hold on; % PLOT EFFECTOR
- p = plot(currentSol.x, (currentSol.y(2,:)),'linewidth',PlotWidth,'Color',[colz(pat,:),PlotAlpha]);
+ p = plot(currentSol.x, log10(currentSol.y(2,:)),'linewidth',PlotWidth,'Color',[colz(pat,:),PlotAlpha]);
 hold off;
 subplot(2,3,3)
 hold on; % PLOT SUPPRESSOR
- p = plot(currentSol.x, (currentSol.y(3,:)),'linewidth',PlotWidth,'Color',[colz(pat,:),PlotAlpha]);
+ p = plot(currentSol.x, log10(currentSol.y(3,:)),'linewidth',PlotWidth,'Color',[colz(pat,:),PlotAlpha]);
 hold off;
 subplot(2,3,4)
 hold on; % PLOT S/E RATIO
@@ -121,7 +121,7 @@ hold off
 end
 
 lambda1 = 0.18;
-lambda2 = 0.001;
+lambda2 = 0.0015;
 lambda3 = 0.4; %0294
 
 alpha = 0.18 * 0.2;  K = 1/(2E-9) *1E4; eta   = 0;%1.1E-8; %1.101E-7; 
@@ -129,12 +129,11 @@ sigma = 1.3E4; rho = 0.1245;   gamma = 2.019E7; mu = 3.422E-10; % rho/(gamma+K) 
 epsilon = 0.99*rho*K/(gamma+K);  delta = 0.0412; %0.04; %0.01412;
 
 phi1 = 3;
-phi = exp(-lambda2*(SOL(pat).x(NN+1:end)-ton(2)));
-% y1 = alpha*SOL(pat).y(1,1:NN).*(1-(SOL(pat).y(1,1:NN)/K));
-y1 = (1-(SOL(pat).y(1,1:NN)/K));
-y2 = (1-(SOL(pat).y(1,NN+1:end)/K).^(1-phi));
+phi = 3*exp(-lambda2*(SOL(pat).x(NN+1:end)-ton(2)));
+y1 = alpha*sol.y(1,1:NN)*(1-(.y(1,1:NN)/K));
+y2 = alpha*sol.y(1,NN+1:end)*(1-(sol.y(1,NN+1:end)/K))^(1+phi);
 
-figure(10); hold on; plot(SOL(pat).x(1:NN),y1,SOL(pat).x(NN+1:end),y2)
+figure(10); hold on; plot(sol.x(1:NN),y1,sol.x(NN+1:end),y2)
 
 drawnow
 % saveas(gcf,['TKI_ton_',num2str(tonset), '_phi1e-10_l3_',num2str(pars(2)),'.png'])

@@ -4,7 +4,7 @@ global ODE_TOL
 ODE_TOL = 1e-8;
 
 lambda1 = 0.18;
-lambda2 = 0.15;
+lambda2 = 10;%0.01;
 lambda3 = 0.4; %0294
 
 alpha = 0.18 * 0.2;  K = 1/(2E-9) *1E4; eta   = 1.1E-8; %1.101E-7; 
